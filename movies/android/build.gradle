@@ -16,3 +16,17 @@ subprojects {
 tasks.register("clean", Delete) {
     delete rootProject.buildDir
 }
+
+// Fix: Java 8 obsolete warnings treated as errors in plugins
+allprojects {
+    repositories {
+        google()
+        mavenCentral()
+    }
+
+    // Fix: remove -Werror e suprime warnings de Java 8 obsoleto nos plugins
+    tasks.withType(JavaCompile).configureEach {
+        options.compilerArgs.removeAll { it == '-Werror' }
+        options.compilerArgs << '-Xlint:-options'
+    }
+}
