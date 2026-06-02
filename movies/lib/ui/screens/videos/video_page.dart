@@ -42,9 +42,8 @@ class _VideoPageState extends ConsumerState<VideoPage> {
   Widget getVideoPlayer(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: screenBackground,
         leading: BackButton(
-          color: Colors.white,
+          color: Theme.of(context).iconTheme.color,
           onPressed: () {
             context.router.maybePop();
           },
@@ -55,7 +54,7 @@ class _VideoPageState extends ConsumerState<VideoPage> {
       body: Container(
         width: double.infinity,
         height: double.infinity,
-        color: screenBackground,
+        color: Theme.of(context).scaffoldBackgroundColor,
         child: Column(
           mainAxisSize: MainAxisSize.max,
           crossAxisAlignment: CrossAxisAlignment.center,

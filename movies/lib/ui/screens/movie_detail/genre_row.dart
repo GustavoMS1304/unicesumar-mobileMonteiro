@@ -56,7 +56,7 @@ class _GenreRowState extends State<GenreRow>
                       padding: const EdgeInsets.symmetric(
                           horizontal: 8, vertical: 4),
                       decoration: BoxDecoration(
-                        color: buttonGrey,
+                        color: Theme.of(context).colorScheme.surface,
                         borderRadius: BorderRadius.circular(12),
                       ),
                       child: Text(
@@ -64,7 +64,10 @@ class _GenreRowState extends State<GenreRow>
                         style: Theme.of(context)
                             .textTheme
                             .bodyLarge
-                            ?.copyWith(color: Colors.white),
+                            ?.copyWith(
+                                color: Theme.of(context)
+                                    .colorScheme
+                                    .onSurface),
                       ),
                     ))
                 .toList(),

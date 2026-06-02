@@ -66,46 +66,167 @@ var verySmallText = roboto.copyWith(
   color: Colors.white,
 );
 
-ThemeData createTheme() {
-  return ThemeData(
-    textTheme: Typography.material2021().englishLike.copyWith(
-          headlineLarge: heading1,
-          headlineMedium: heading2,
-          headlineSmall: body2Regular,
-          titleLarge: largeTitle,
-          titleMedium: heading2,
-          titleSmall: body2Bold,
-          bodyLarge: body1Regular,
-          bodyMedium: body2Regular,
-          bodySmall: body3Regular,
-          labelLarge: body1Bold,
-          labelMedium: body2Bold,
-          labelSmall: caption,
+TextTheme buildTextTheme(Color textColor) {
+  final base = GoogleFonts.roboto();
+  return Typography.material2021().englishLike.copyWith(
+        headlineLarge: base.copyWith(
+          fontSize: 20,
+          fontWeight: FontWeight.w600,
+          color: textColor,
         ),
+        headlineMedium: base.copyWith(
+          fontSize: 18,
+          fontWeight: FontWeight.w600,
+          color: textColor,
+        ),
+        headlineSmall: base.copyWith(
+          fontSize: 14,
+          fontWeight: FontWeight.w400,
+          color: textColor,
+        ),
+        titleLarge: base.copyWith(
+          fontSize: 24,
+          fontWeight: FontWeight.w600,
+          color: textColor,
+        ),
+        titleMedium: base.copyWith(
+          fontSize: 20,
+          fontWeight: FontWeight.w600,
+          color: textColor,
+        ),
+        titleSmall: base.copyWith(
+          fontSize: 14,
+          fontWeight: FontWeight.w700,
+          color: textColor,
+        ),
+        bodyLarge: base.copyWith(
+          fontSize: 16,
+          fontWeight: FontWeight.w400,
+          color: textColor,
+        ),
+        bodyMedium: base.copyWith(
+          fontSize: 14,
+          fontWeight: FontWeight.w400,
+          color: textColor,
+        ),
+        bodySmall: base.copyWith(
+          fontSize: 12,
+          fontWeight: FontWeight.w400,
+          color: textColor,
+        ),
+        labelLarge: base.copyWith(
+          fontSize: 16,
+          fontWeight: FontWeight.w700,
+          color: textColor,
+        ),
+        labelMedium: base.copyWith(
+          fontSize: 14,
+          fontWeight: FontWeight.w700,
+          color: textColor,
+        ),
+        labelSmall: base.copyWith(
+          fontSize: 12,
+          fontWeight: FontWeight.w400,
+          color: textColor,
+        ),
+      );
+}
+
+ThemeData createDarkTheme() {
+  final textTheme = buildTextTheme(Colors.white);
+  return ThemeData.dark().copyWith(
+    scaffoldBackgroundColor: screenBackground,
+    textTheme: textTheme,
     appBarTheme: const AppBarTheme(
-      backgroundColor: Colors.white, // App bar background color
-      foregroundColor: Colors.black, // Text/icon color on app bar
+      backgroundColor: Colors.white,
+      foregroundColor: Colors.black,
+    ),
+    colorScheme: const ColorScheme.dark(
+      background: screenBackground,
+      surface: Color(0xFF1E1E1E),
+      primary: Colors.white,
+      onPrimary: Colors.black,
+      onSurface: Colors.white,
+      onBackground: Colors.white,
     ),
     navigationBarTheme: NavigationBarThemeData(
-        backgroundColor: searchBarBackground,
-        labelTextStyle: WidgetStateTextStyle.resolveWith((Set<WidgetState> states) {
-          // If the item is selected, use primary color; otherwise, use your desired unselected color
-          if (states.contains(WidgetState.selected)) {
-            return const TextStyle(color: Colors.white);
-          }
-          return const TextStyle(color: posterBorder); // Unselected color
-        }),
-        iconTheme: WidgetStateProperty.all<IconThemeData>(
-            const IconThemeData(color: Colors.white)),
-        indicatorColor: posterBorder),
+      backgroundColor: searchBarBackground,
+      labelTextStyle: WidgetStateTextStyle.resolveWith((Set<WidgetState> states) {
+        if (states.contains(WidgetState.selected)) {
+          return const TextStyle(color: Colors.white);
+        }
+        return const TextStyle(color: posterBorder);
+      }),
+      iconTheme: WidgetStateProperty.all<IconThemeData>(
+        const IconThemeData(color: Colors.white),
+      ),
+      indicatorColor: posterBorder,
+    ),
     bottomNavigationBarTheme: const BottomNavigationBarThemeData(
       backgroundColor: searchBarBackground,
-      // Bottom nav background color
       selectedItemColor: Colors.white,
-      // Selected item color
       unselectedLabelStyle: TextStyle(color: Colors.black),
       showUnselectedLabels: true,
-      unselectedItemColor: posterBorder, // Unselected item color
+      unselectedItemColor: posterBorder,
+    ),
+    inputDecorationTheme: InputDecorationTheme(
+      filled: true,
+      fillColor: searchBarBackground,
+      border: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(20),
+        borderSide: BorderSide.none,
+      ),
+      hintStyle: textTheme.bodyMedium?.copyWith(color: posterBorder),
+    ),
+  );
+}
+
+ThemeData createLightTheme() {
+  final textTheme = buildTextTheme(Colors.black);
+  const lightSurface = Color(0xFFF2F2F2);
+  return ThemeData.light().copyWith(
+    scaffoldBackgroundColor: Colors.white,
+    textTheme: textTheme,
+    appBarTheme: const AppBarTheme(
+      backgroundColor: Colors.white,
+      foregroundColor: Colors.black,
+    ),
+    colorScheme: const ColorScheme.light(
+      background: Colors.white,
+      surface: lightSurface,
+      primary: Colors.black,
+      onPrimary: Colors.white,
+      onSurface: Colors.black,
+      onBackground: Colors.black,
+    ),
+    navigationBarTheme: NavigationBarThemeData(
+      backgroundColor: Colors.white,
+      labelTextStyle: WidgetStateTextStyle.resolveWith((Set<WidgetState> states) {
+        if (states.contains(WidgetState.selected)) {
+          return const TextStyle(color: Colors.black);
+        }
+        return const TextStyle(color: Colors.grey);
+      }),
+      iconTheme: WidgetStateProperty.all<IconThemeData>(
+        const IconThemeData(color: Colors.black),
+      ),
+      indicatorColor: Colors.black,
+    ),
+    bottomNavigationBarTheme: const BottomNavigationBarThemeData(
+      backgroundColor: Colors.white,
+      selectedItemColor: Colors.black,
+      unselectedLabelStyle: TextStyle(color: Colors.grey),
+      showUnselectedLabels: true,
+      unselectedItemColor: Colors.grey,
+    ),
+    inputDecorationTheme: InputDecorationTheme(
+      filled: true,
+      fillColor: lightSurface,
+      border: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(20),
+        borderSide: BorderSide.none,
+      ),
+      hintStyle: textTheme.bodyMedium?.copyWith(color: Colors.grey),
     ),
   );
 }

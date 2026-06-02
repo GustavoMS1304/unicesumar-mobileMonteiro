@@ -23,9 +23,6 @@ class _ButtonRowState extends State<ButtonRow> with TickerProviderStateMixin {
   late AnimationController _sizeController;
   late Animation<double> _sizeAnimation;
 
-  late AnimationController _colorController;
-  late Animation<Color?> _colorAnimation;
-
   @override
   void initState() {
     super.initState();
@@ -40,24 +37,11 @@ class _ButtonRowState extends State<ButtonRow> with TickerProviderStateMixin {
     ).animate(
       CurvedAnimation(parent: _sizeController, curve: Curves.easeInOut),
     );
-
-    _colorController = AnimationController(
-      vsync: this,
-      duration: const Duration(seconds: 1), // Adjust color change duration
-    )..repeat(reverse: true);
-
-    _colorAnimation = ColorTween(
-      begin: Colors.white, // Starting color
-      end: Colors.red, // Ending color
-    ).animate(
-      CurvedAnimation(parent: _colorController, curve: Curves.easeInOut),
-    );
   }
 
   @override
   void dispose() {
     _sizeController.dispose();
-    _colorController.dispose();
     super.dispose();
   }
 
@@ -80,18 +64,17 @@ class _ButtonRowState extends State<ButtonRow> with TickerProviderStateMixin {
               },
               icon: widget.favoriteSelected
                   ? AnimatedBuilder(
-                      animation:
-                          Listenable.merge([_sizeController, _colorController]),
+                      animation: _sizeController,
                       builder: (context, child) {
                         return Icon(
                           Icons.favorite_outlined,
                           size: 21 * _sizeAnimation.value,
-                          color: _colorAnimation.value,
+                          color: Colors.red,
                         );
                       })
-                  : const Icon(
+                  : Icon(
                       Icons.favorite_border,
-                      color: Colors.white,
+                      color: Theme.of(context).iconTheme.color,
                     ),
             ),
           ),
@@ -103,9 +86,9 @@ class _ButtonRowState extends State<ButtonRow> with TickerProviderStateMixin {
             ),
             icon: IconButton(
               onPressed: () {},
-              icon: const Icon(
+              icon: Icon(
                 Icons.thumb_up_alt_outlined,
-                color: Colors.white,
+                color: Theme.of(context).iconTheme.color,
               ),
             ),
           ),
@@ -117,9 +100,9 @@ class _ButtonRowState extends State<ButtonRow> with TickerProviderStateMixin {
             ),
             icon: IconButton(
               onPressed: () {},
-              icon: const Icon(
+              icon: Icon(
                 Icons.ios_share,
-                color: Colors.white,
+                color: Theme.of(context).iconTheme.color,
               ),
             ),
           ),

@@ -1,3 +1,4 @@
+import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:movies/data/database/database_interface.dart';
 import 'package:movies/data/database/drift/drift_database.dart';
@@ -36,6 +37,12 @@ Future<Prefs> prefs(PrefsRef ref) async {
   final sharedPrefs = await ref.read(sharedPrefsProvider.future);
   return Prefs(sharedPrefs);
 }
+
+const themeModePreferenceKey = 'theme_mode';
+
+final themeModeProvider = StateProvider<ThemeMode>((ref) {
+  return ThemeMode.dark;
+});
 
 @Riverpod(keepAlive: true)
 AppRouter appRouter(AppRouterRef ref) => AppRouter();

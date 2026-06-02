@@ -14,16 +14,16 @@ class TitleRow extends StatelessWidget {
       children: [
         Padding(
           padding: const EdgeInsets.fromLTRB(16, 16.0, 0.0, 8.0),
-          child: Text(text, style: const TextStyle(fontSize: 20, fontWeight: FontWeight.w600, color: Colors.white)),
+          child: Text(text, style: Theme.of(context).textTheme.titleMedium),
         ),
         const Spacer(),
         Padding(
           padding: const EdgeInsets.fromLTRB(16, 16.0, 8.0, 0.0),
           child: TextButton(
             onPressed: onMoreClicked,
-            child: const Text(
+            child: Text(
               'More',
-              style: TextStyle(fontSize: 16, fontWeight: FontWeight.w400, color: Colors.white),
+              style: Theme.of(context).textTheme.bodyMedium,
             ),
           ),
         ),

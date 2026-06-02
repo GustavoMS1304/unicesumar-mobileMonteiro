@@ -25,6 +25,9 @@ class GenreScreen extends ConsumerStatefulWidget {
 }
 
 class _GenreScreenState extends ConsumerState<GenreScreen> {
+  static const _genreSearchTermKey = 'genre_search_term';
+  static const _genreSortKey = 'genre_sorting';
+
   late MovieViewModel movieViewModel;
   String currentSearchString = '';
   List<GenreState> genreStates = [];
@@ -33,6 +36,7 @@ class _GenreScreenState extends ConsumerState<GenreScreen> {
   final expandedNotifier = ValueNotifier<bool>(false);
   MovieResponse? currentMovieResponse;
   Sorting selectedSort = Sorting.aToz;
+  bool _hasRestoredPreferences = false;
 
   @override
   Widget build(BuildContext context) {
@@ -43,6 +47,10 @@ class _GenreScreenState extends ConsumerState<GenreScreen> {
       data: (viewModel) {
         movieViewModel = viewModel;
         buildGenreState();
+        if (!_hasRestoredPreferences) {
+          _hasRestoredPreferences = true;
+          restoreSavedPreferences();
+        }
         return buildScreen();
       },
     );
@@ -58,7 +66,7 @@ class _GenreScreenState extends ConsumerState<GenreScreen> {
   Widget buildScreen() {
     return SafeArea(
       child: Container(
-        color: screenBackground,
+        color: Theme.of(context).scaffoldBackgroundColor,
         child: Column(
           mainAxisSize: MainAxisSize.max,
           mainAxisAlignment: MainAxisAlignment.start,
@@ -76,13 +84,17 @@ class _GenreScreenState extends ConsumerState<GenreScreen> {
                           child: Text('Find a Movie',
                               style: Theme.of(context).textTheme.titleLarge),
                         ),
-                        GenreSearchRow((searchString) {
-                          currentSearchString = searchString;
-                          currentMovieResponse = null;
-                          FocusScope.of(context).unfocus();
-                          expandedNotifier.value = false;
-                          search();
-                        }),
+                        GenreSearchRow(
+                          (searchString) async {
+                            currentSearchString = searchString;
+                            currentMovieResponse = null;
+                            FocusScope.of(context).unfocus();
+                            expandedNotifier.value = false;
+                            await saveSearchTerm(searchString);
+                            await search();
+                          },
+                          initialSearchText: currentSearchString,
+                        ),
                       ],
                     ),
                   ),
@@ -104,8 +116,10 @@ class _GenreScreenState extends ConsumerState<GenreScreen> {
                   const SliverDivider(),
                   SortPicker(
                       useSliver: true,
-                      onSortSelected: (sorting) {
+                      selectedSort: selectedSort,
+                      onSortSelected: (sorting) async {
                         selectedSort = sorting;
+                        await saveSelectedSort(sorting);
                         sortMovies();
                       }),
                   ValueListenableBuilder<List<MovieResults>>(
@@ -166,6 +180,44 @@ class _GenreScreenState extends ConsumerState<GenreScreen> {
     }
     sortMovies();
     return currentMovieList;
+  }
+
+  Future<void> restoreSavedPreferences() async {
+    final prefs = await ref.read(prefsProvider.future);
+    final savedSearch = prefs.getString(_genreSearchTermKey) ?? '';
+    final savedSort = prefs.getString(_genreSortKey);
+
+    setState(() {
+      currentSearchString = savedSearch;
+      selectedSort = _parseSavedSort(savedSort);
+      currentMovieResponse = null;
+      expandedNotifier.value = false;
+    });
+
+    if (currentSearchString.isNotEmpty) {
+      await search();
+    }
+  }
+
+  Sorting _parseSavedSort(String? value) {
+    if (value == null || value.isEmpty) {
+      return Sorting.aToz;
+    }
+
+    return Sorting.values.firstWhere(
+      (sort) => sort.name == value,
+      orElse: () => Sorting.aToz,
+    );
+  }
+
+  Future<void> saveSearchTerm(String searchTerm) async {
+    final prefs = await ref.read(prefsProvider.future);
+    prefs.setString(_genreSearchTermKey, searchTerm);
+  }
+
+  Future<void> saveSelectedSort(Sorting sorting) async {
+    final prefs = await ref.read(prefsProvider.future);
+    prefs.setString(_genreSortKey, sorting.name);
   }
 
   StringBuffer getGenreString() {

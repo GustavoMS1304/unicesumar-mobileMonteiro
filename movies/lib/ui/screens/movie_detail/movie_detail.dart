@@ -37,6 +37,7 @@ class _MovieDetailState extends ConsumerState<MovieDetail> {
   List<DBFavorite> favorites = [];
   final favoriteNotifier = ValueNotifier<bool>(false);
   int currentFavoriteId = -1;
+  bool _favoritesLoaded = false;
 
   @override
   Widget build(BuildContext context) {
@@ -46,7 +47,10 @@ class _MovieDetailState extends ConsumerState<MovieDetail> {
       loading: () => const NotReady(),
       data: (viewModel) {
         movieViewModel = viewModel;
-        getFavorites();
+        if (!_favoritesLoaded) {
+          _favoritesLoaded = true;
+          getFavorites();
+        }
         return buildScreen();
       },
     );
@@ -54,7 +58,11 @@ class _MovieDetailState extends ConsumerState<MovieDetail> {
 
   Future getFavorites() async {
     favorites = await movieViewModel.getFavorites();
-    favoriteNotifier.value = isMovieFavorite(widget.movieId);
+    final matched = favorites.firstWhereOrNull(
+      (favorite) => favorite.movieId == widget.movieId,
+    );
+    currentFavoriteId = matched?.id ?? -1;
+    favoriteNotifier.value = matched != null;
   }
 
   bool isMovieFavorite(int id) {
@@ -80,9 +88,8 @@ class _MovieDetailState extends ConsumerState<MovieDetail> {
           return SafeArea(
             child: Scaffold(
               appBar: AppBar(
-                backgroundColor: screenBackground,
                 leading: BackButton(
-                  color: Colors.white,
+                  color: Theme.of(context).iconTheme.color,
                   onPressed: () {
                     context.router.maybePopTop();
                   },
@@ -92,7 +99,7 @@ class _MovieDetailState extends ConsumerState<MovieDetail> {
                     style: Theme.of(context).textTheme.headlineMedium),
               ),
               body: Container(
-                color: screenBackground,
+                color: Theme.of(context).scaffoldBackgroundColor,
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
                   children: [
@@ -118,15 +125,14 @@ class _MovieDetailState extends ConsumerState<MovieDetail> {
                                   onFavoriteSelected: () async {
                                     if (favoriteNotifier.value) {
                                       if (currentFavoriteId != -1) {
-                                        movieViewModel
+                                        await movieViewModel
                                             .removeFavorite(currentFavoriteId);
+                                        await getFavorites();
                                       }
-                                      favoriteNotifier.value = false;
                                     } else {
-                                      currentFavoriteId = movieDetails.id;
                                       await movieViewModel
                                           .saveFavorite(movieDetails);
-                                      favoriteNotifier.value = true;
+                                      await getFavorites();
                                     }
                                   },
                                 );

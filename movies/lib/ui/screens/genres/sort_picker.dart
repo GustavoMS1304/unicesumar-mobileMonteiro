@@ -9,15 +9,37 @@ typedef OnSortSelected = void Function(Sorting);
 class SortPicker extends ConsumerStatefulWidget {
   final bool useSliver;
   final OnSortSelected onSortSelected;
+  final Sorting selectedSort;
 
-  const SortPicker({required this.useSliver, required this.onSortSelected, super.key});
+  const SortPicker({
+    required this.useSliver,
+    required this.onSortSelected,
+    required this.selectedSort,
+    super.key,
+  });
 
   @override
   ConsumerState<SortPicker> createState() => _SortPickerState();
 }
 
 class _SortPickerState extends ConsumerState<SortPicker> {
-  Sorting selectedSort = Sorting.aToz;
+  late Sorting selectedSort;
+
+  @override
+  void initState() {
+    super.initState();
+    selectedSort = widget.selectedSort;
+  }
+
+  @override
+  void didUpdateWidget(covariant SortPicker oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.selectedSort != widget.selectedSort) {
+      setState(() {
+        selectedSort = widget.selectedSort;
+      });
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -40,9 +62,9 @@ class _SortPickerState extends ConsumerState<SortPicker> {
         ),
         addHorizontalSpace(16),
         PopupMenuButton<Sorting>(
-          icon: const Icon(
+          icon: Icon(
             Icons.arrow_drop_down,
-            color: Colors.white ,
+            color: Theme.of(context).iconTheme.color,
           ),
           onSelected: (Sorting value) {
             widget.onSortSelected(value);

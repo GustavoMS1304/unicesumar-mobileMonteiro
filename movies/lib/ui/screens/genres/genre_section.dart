@@ -37,7 +37,7 @@ class _GenreSectionState extends ConsumerState<GenreSection> {
     return SliverList(
         delegate: SliverChildListDelegate([
       ExpansionPanelList(
-        expandIconColor: Colors.white,
+        expandIconColor: Theme.of(context).colorScheme.onBackground,
         expansionCallback: (int index, bool expanded) {
           setState(() {
             widget.onGenresExpanded(expanded);
@@ -46,7 +46,7 @@ class _GenreSectionState extends ConsumerState<GenreSection> {
         children: [
           ExpansionPanel(
             isExpanded: widget.isExpanded,
-            backgroundColor: screenBackground,
+            backgroundColor: Theme.of(context).colorScheme.background,
             headerBuilder: (BuildContext context, bool isExpanded) {
               return Padding(
                 padding: const EdgeInsets.only(left: 16.0, top: 16),
@@ -66,7 +66,7 @@ class _GenreSectionState extends ConsumerState<GenreSection> {
                         // Center the text
                         child: Text(
                           totalSelected().toString(),
-                          style: verySmallText,
+                          style: Theme.of(context).textTheme.labelSmall,
                         ),
                       ),
                     )
@@ -100,8 +100,9 @@ class _GenreSectionState extends ConsumerState<GenreSection> {
     return widget.genreStates.mapIndexed((index, element) {
       final genre = widget.genreStates[index].genre;
       return FilterChip(
-        backgroundColor: searchBarBackground,
-        selectedColor: buttonGrey,
+        backgroundColor: Theme.of(context).colorScheme.surface,
+        selectedColor:
+            Theme.of(context).colorScheme.onSurface.withOpacity(0.15),
         label: Text(genre.name, style: Theme.of(context).textTheme.labelSmall),
         selected: widget.genreStates[index].isSelected,
         onSelected: (selected) {

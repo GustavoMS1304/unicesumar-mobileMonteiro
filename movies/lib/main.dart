@@ -26,16 +26,32 @@ class MainApp extends ConsumerStatefulWidget {
 }
 
 class _MainAppState extends ConsumerState<MainApp> {
+  @override
+  void initState() {
+    super.initState();
+    loadThemeMode();
+  }
+
+  Future<void> loadThemeMode() async {
+    final prefs = await ref.read(prefsProvider.future);
+    final modeString = prefs.getString(themeModePreferenceKey);
+    if (modeString != null) {
+      final mode = modeString == 'light' ? ThemeMode.light : ThemeMode.dark;
+      ref.read(themeModeProvider.notifier).state = mode;
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
     final router = ref.watch(appRouterProvider);
+    final selectedMode = ref.watch(themeModeProvider);
     return MaterialApp.router(
       routerConfig: router.config(),
       title: 'Movies',
       debugShowCheckedModeBanner: false,
-      theme: createTheme(),
+      themeMode: selectedMode,
+      theme: createLightTheme(),
+      darkTheme: createDarkTheme(),
     );
-
   }
 }

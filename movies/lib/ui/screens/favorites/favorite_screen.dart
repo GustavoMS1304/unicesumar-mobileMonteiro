@@ -49,9 +49,13 @@ class _FavoriteScreenState extends ConsumerState<FavoriteScreen> {
               (snapshot.connectionState != ConnectionState.done)) {
             return const NotReady();
           }
-          return Scaffold(
+          final favorites = snapshot.requireData;
+        if (currentFavorites.isEmpty || currentFavorites.length != favorites.length) {
+          currentFavorites = favorites;
+        }
+        return Scaffold(
             body: Container(
-              color: screenBackground,
+              color: Theme.of(context).scaffoldBackgroundColor,
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 mainAxisAlignment: MainAxisAlignment.start,
@@ -74,13 +78,19 @@ class _FavoriteScreenState extends ConsumerState<FavoriteScreen> {
                           ),
                         ),
                         SortPicker(
-                            useSliver: true,
-                            onSortSelected: (sorting) {
+                          useSliver: true,
+                          selectedSort: selectedSort,
+                          onSortSelected: (sorting) {
+                            setState(() {
                               selectedSort = sorting;
                               sortMovies();
-                            }),
+                            });
+                          },
+                        ),
                         VerticalFavoriteList(
-                          favorites: snapshot.requireData,
+                          favorites: currentFavorites.isEmpty
+                              ? snapshot.requireData
+                              : currentFavorites,
                           movieViewModel: movieViewModel,
                           onMovieTap: (movieId) {
                             context.router

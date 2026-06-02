@@ -14,7 +14,7 @@ class MovieOverview extends StatelessWidget {
       padding: const EdgeInsets.fromLTRB(16, 0, 16, 24),
       child: Text(
         details.overview,
-        style: body1Regular,
+        style: Theme.of(context).textTheme.bodyLarge,
       ),
     );
   }
